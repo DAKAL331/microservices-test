@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: air_quality_alerts
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  air_quality_alerts:
+    build: ./air_quality_alerts
+    ports:
+      - "3001:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/air_quality_alerts?schema=public
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      RABBITMQ_QUEUE: air_quality_alerts
+      PORT: 3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma migrate deploy && node dist/main"
+
+  air_quality_collector:
+    build: ./air_quality_collector
+    ports:
+      - "3002:3000"
+    environment:
+      GOOGLE_AIR_QUALITY_API_KEY: ${GOOGLE_AIR_QUALITY_API_KEY}
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      RABBITMQ_QUEUE: air_quality_alerts
+      POLL_INTERVAL_MS: 10000
+      PORT: 3000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "5173:5173"
+    environment:
+      API_URL: http://air_quality_alerts:3000
+    depends_on:
+      - air_quality_alerts
+
+volumes:
+  postgres_data:

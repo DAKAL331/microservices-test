@@ -1,0 +1,42 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1 {
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: #e74c3c;
+  margin-top: 1rem;
+}
+
+.hint {
+  color: #888;
+  margin-top: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #333;
+}
+
+th {
+  font-weight: 600;
+  border-bottom-width: 2px;
+}
+
+@media (prefers-color-scheme: light) {
+  th, td {
+    border-bottom-color: #ddd;
+  }
+}
