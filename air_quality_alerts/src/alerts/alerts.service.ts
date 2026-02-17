@@ -2,12 +2,17 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AlertPayloadDto } from '../dto/alert-payload.dto';
 import { colorToHex } from '../common/utils/color.util';
 import { PrismaService } from '../prisma/prisma.service';
+import { WsGateway } from '../ws/ws.gateway';
+import { WsEvents } from '../ws/events/events-names';
 
 @Injectable()
 export class AlertsService {
   private readonly logger = new Logger(AlertsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly wsGateway: WsGateway,
+  ) {}
 
   async processAlert(payload: AlertPayloadDto) {
     const hex = colorToHex(payload.color);
@@ -35,6 +40,8 @@ export class AlertsService {
     });
 
     this.logger.log(`Alert persisted with id ${alert.id}`);
+
+    this.wsGateway.emit(WsEvents.NEW_ALERT, alert);
 
     return alert;
   }

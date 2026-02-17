@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { io } from 'socket.io-client'
 import './App.css'
 
 interface Alert {
@@ -12,6 +13,16 @@ function App() {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const socket = io(import.meta.env.VITE_WS_URL || 'http://localhost:3001')
+
+    socket.on('new_alert', (alert: Alert) => {
+      setAlerts((prev) => [alert, ...prev].slice(0, 20))
+    })
+
+    return () => { socket.disconnect() }
+  }, [])
 
   const fetchAlerts = async () => {
     setLoading(true)
