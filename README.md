@@ -4,10 +4,11 @@ A microservices-based system that monitors real-time air quality across Middle E
 
 ## Architecture
 
-The system consists of two NestJS services communicating via RabbitMQ:
+The system consists of two NestJS services communicating via RabbitMQ, plus a React dashboard:
 
 - **Air Quality Collector** — Polls the [Google Air Quality API](https://developers.google.com/maps/documentation/air-quality) every 10 seconds, evaluates AQI/PM2.5/PM10 thresholds, and publishes critical events to RabbitMQ.
 - **Air Quality Alerts** — Consumes alert events from RabbitMQ, persists them to PostgreSQL, and exposes an HTTP API to query stored alerts.
+- **Dashboard** — React frontend that displays alerts fetched from the Alerts API.
 
 ```
 Google Air Quality API
@@ -19,6 +20,11 @@ Google Air Quality API
  └──────────────┘                       └──────────────┘
                                               |
                                          GET /alerts
+                                              |
+                                       ┌──────────────┐
+                                       │   Dashboard   │
+                                       │   (React)     │
+                                       └──────────────┘
 ```
 
 ## Prerequisites
@@ -55,20 +61,23 @@ Google Air Quality API
    docker-compose up --build
    ```
 
-   This will start four containers:
+   This will start five containers:
    - PostgreSQL (with automatic schema migration)
    - RabbitMQ (with management UI)
    - Air Quality Alerts service
    - Air Quality Collector service
+   - Dashboard
 
 5. **Verify everything is running**
 
-   | Service | URL |
-   |---|---|
-   | Alerts API | http://localhost:3001/alerts |
-   | RabbitMQ Management UI | http://localhost:15672 (guest / guest) |
+   | Service | URL | Description |
+   |---|---|---|
+   | Dashboard | http://localhost:5173 | React UI to view alerts |
+   | Alerts API | http://localhost:3001/alerts | REST endpoint returning latest alerts |
+   | Collector API | http://localhost:3002 | Air quality polling service |
+   | RabbitMQ Management UI | http://localhost:15672 | Message broker dashboard (guest / guest) |
 
-   The collector will begin polling immediately. Once air quality thresholds are exceeded, alerts will appear at the `/alerts` endpoint.
+   The collector will begin polling immediately. Once air quality thresholds are exceeded, alerts will appear on the dashboard and at the `/alerts` endpoint.
 
 ## Thresholds
 

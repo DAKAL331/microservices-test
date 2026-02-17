@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { THRESHOLDS } from './constants/air-quality.constants';
+import { POLLUTANTS, THRESHOLDS } from './constants/air-quality.constants';
 import { AirQualityResult, PollutantConcentration } from './interfaces';
 
 @Injectable()
@@ -9,12 +9,12 @@ export class ThresholdService {
       return true;
     }
 
-    const pm25 = this.getPollutantValue(result.pollutants, 'pm25');
+    const pm25 = this.getPollutantValue(result.pollutants, POLLUTANTS.PM25);
     if (pm25 !== null && pm25 > THRESHOLDS.PM25) {
       return true;
     }
 
-    const pm10 = this.getPollutantValue(result.pollutants, 'pm10');
+    const pm10 = this.getPollutantValue(result.pollutants, POLLUTANTS.PM10);
     if (pm10 !== null && pm10 > THRESHOLDS.PM10) {
       return true;
     }

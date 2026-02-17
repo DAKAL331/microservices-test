@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CITIES } from './constants/air-quality.constants';
+import { CITIES, POLLUTANTS } from './constants/air-quality.constants';
 import { AirQualityApiClient } from './air-quality-api.client';
 import { ThresholdService } from './threshold.service';
 import { PublisherService } from '../publisher';
@@ -44,11 +44,11 @@ export class AirQualityService {
     dto.dominantPollutant = result.dominantPollutant;
     dto.pm25 = this.thresholdService.getPollutantValue(
       result.pollutants,
-      'pm25',
+      POLLUTANTS.PM25,
     );
     dto.pm10 = this.thresholdService.getPollutantValue(
       result.pollutants,
-      'pm10',
+      POLLUTANTS.PM10,
     );
     dto.color = result.color;
     return dto;

@@ -16,4 +16,9 @@ export const THRESHOLDS = {
   UAQI: 100,
 } as const;
 
+export const POLLUTANTS = {
+  PM25: 'pm25',
+  PM10: 'pm10',
+} as const;
+
 export const AIR_QUALITY_ALERT_EVENT = 'air_quality_alert';
