@@ -42,6 +42,11 @@ services:
         condition: service_healthy
     command: >
       sh -c "npx prisma migrate deploy && node dist/main"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   air_quality_collector:
     build: ./air_quality_collector
@@ -56,6 +61,11 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   dashboard:
     build: ./dashboard
@@ -64,7 +74,8 @@ services:
     environment:
       API_URL: http://air_quality_alerts:3000
     depends_on:
-      - air_quality_alerts
+      air_quality_alerts:
+        condition: service_healthy
 
 volumes:
   postgres_data:

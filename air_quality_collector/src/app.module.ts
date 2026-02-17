@@ -8,6 +8,7 @@ import { AppConfigService, validate } from './config';
 import { MessagingModule } from './messaging';
 import { AirQualityModule } from './air-quality';
 import { SchedulerModule } from './scheduler';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SchedulerModule } from './scheduler';
     MessagingModule,
     AirQualityModule,
     SchedulerModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],
