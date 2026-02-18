@@ -6,13 +6,13 @@ import { AppConfigService, validate } from './config';
 import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
 import { WsModule } from './ws/ws.module';
-import { AlertsController } from './alerts/alerts.controller';
-import { AlertsService } from './alerts/alerts.service';
+import { AlertsModule } from './alerts/alerts.module';
+import { ConsumerModule } from './consumer/consumer.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, validate }), PrismaModule, HealthModule, WsModule],
-  controllers: [AppController, AlertsController],
-  providers: [AppService, AppConfigService, AlertsService],
+  imports: [ConfigModule.forRoot({ isGlobal: true, validate }), PrismaModule, HealthModule, WsModule, AlertsModule, ConsumerModule],
+  controllers: [AppController],
+  providers: [AppService, AppConfigService],
   exports: [AppConfigService],
 })
 export class AppModule {}

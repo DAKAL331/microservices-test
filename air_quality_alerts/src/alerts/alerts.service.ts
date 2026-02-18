@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 import { AlertPayloadDto } from './dto/alert.dto';
 import { colorToHex } from '../common/utils/color.util';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,6 +15,19 @@ export class AlertsService {
     private readonly prisma: PrismaService,
     private readonly wsGateway: WsGateway,
   ) {}
+
+  async handleAlert(rawPayload: any): Promise<void> {
+    const payload = plainToInstance(AlertPayloadDto, rawPayload);
+    const errors = await validate(payload, { whitelist: true });
+
+    if (errors.length > 0) {
+      throw new Error(
+        `Payload validation failed: ${JSON.stringify(errors.map((e) => e.constraints))}`,
+      );
+    }
+
+    await this.processAlert(payload);
+  }
 
   async processAlert(payload: AlertPayloadDto) {
     const hex = colorToHex(payload.color);
