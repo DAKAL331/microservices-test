@@ -60,12 +60,12 @@ export class AirQualityApiClient {
 
     return {
       city,
-      aqi: primaryIndex?.aqi ?? 0,
-      category: primaryIndex?.category ?? 'unknown',
-      dominantPollutant: primaryIndex?.dominantPollutant ?? 'unknown',
-      regionCode: response.regionCode ?? 'unknown',
-      color: primaryIndex?.color ?? {},
-      pollutants: response.pollutants ?? [],
+      aqi: primaryIndex?.aqi,
+      category: primaryIndex?.category,
+      dominantPollutant: primaryIndex?.dominantPollutant,
+      regionCode: response.regionCode,
+      color: primaryIndex?.color,
+      pollutants: response.pollutants,
       isCritical: false,
     };
   }
