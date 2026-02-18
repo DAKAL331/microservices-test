@@ -1,14 +1,9 @@
 import { Controller, Get, Logger } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  Ctx,
-  EventPattern,
-  Payload,
-  RmqContext,
-} from '@nestjs/microservices';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { AlertPayloadDto } from '../dto/alert-payload.dto';
+import { AlertPayloadDto } from './dto/alert.dto';
 import { AlertsService } from './alerts.service';
 
 @ApiTags('Alerts')
@@ -19,17 +14,21 @@ export class AlertsController {
   constructor(private readonly alertsService: AlertsService) {}
 
   @Get('alerts')
-  @ApiOperation({ summary: 'Get latest alerts', description: 'Returns the 20 most recent air quality alerts ordered by timestamp descending.' })
-  @ApiResponse({ status: 200, description: 'List of alerts returned successfully.' })
+  @ApiOperation({
+    summary: 'Get latest alerts',
+    description:
+      'Returns the 20 most recent air quality alerts ordered by timestamp descending.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of alerts returned successfully.',
+  })
   async getAlerts() {
     return this.alertsService.getLatestAlerts();
   }
 
   @EventPattern('air_quality_alert')
-  async handleAlert(
-    @Payload() rawPayload: any,
-    @Ctx() context: RmqContext,
-  ) {
+  async handleAlert(@Payload() rawPayload: any, @Ctx() context: RmqContext) {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
 
@@ -49,9 +48,7 @@ export class AlertsController {
     try {
       const alert = await this.alertsService.processAlert(payload);
       channel.ack(originalMsg);
-      this.logger.log(
-        `Alert processed and ACK'd for ${payload.city}`,
-      );
+      this.logger.log(`Alert processed and ACK'd for ${payload.city}`);
       return alert;
     } catch (error) {
       this.logger.error(

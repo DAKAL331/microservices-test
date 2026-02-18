@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AlertPayloadDto } from '../dto/alert-payload.dto';
+import { AlertPayloadDto } from './dto/alert.dto';
 import { colorToHex } from '../common/utils/color.util';
 import { PrismaService } from '../prisma/prisma.service';
 import { WsGateway } from '../ws/ws.gateway';
